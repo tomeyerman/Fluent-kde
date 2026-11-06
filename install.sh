@@ -253,6 +253,25 @@ refresh_caches() {
   fi
 }
 
+# Pick the SDDM background matching the installed variant, mirroring upstream's
+# sddm/install.sh (background${variant}.png). Only one SDDM theme dir is installed,
+# so --round wins (no round+color backgrounds exist), then the first -t color.
+sddm_background_name() {
+  local variant=''
+  if [[ "${round}" == '-round' ]]; then
+    variant='-round'
+  elif [[ -n "${themes[0]:-}" ]]; then
+    variant="${themes[0]}"
+  fi
+
+  if [[ -n "${variant}" && ! -f "${SRC_DIR}/sddm/backgrounds/background${variant}.png" ]]; then
+    prompt -w "No SDDM background for '${variant#-}', using the default one." >&2
+    variant=''
+  fi
+
+  echo "background${variant}.png"
+}
+
 install_sddm() {
   [[ "${no_sddm}" == "1" ]] && return 0
 
@@ -274,7 +293,7 @@ install_sddm() {
   cp -r "${SRC_DIR}/sddm/${sddm_variant}" "${SDDM_DIR}/Fluent"
   cp -r "${SRC_DIR}/sddm/assets" "${SDDM_DIR}/Fluent/assets"
   cp "${SRC_DIR}/sddm/preview.png" "${SDDM_DIR}/Fluent/preview.png"
-  cp "${SRC_DIR}/sddm/backgrounds/background.png" "${SDDM_DIR}/Fluent/background.png"
+  cp "${SRC_DIR}/sddm/backgrounds/$(sddm_background_name)" "${SDDM_DIR}/Fluent/background.png"
   mkdir -p "${SDDM_DIR}/Fluent/faces"
 }
 
