@@ -8,6 +8,11 @@ TextField {
     font.pointSize: config.fontSize
     font.family: config.font
     width: parent.width
+    // Center text + caret in the fixed-height box ourselves instead of relying on
+    // the active QQC2 style's padding/alignment defaults.
+    verticalAlignment: TextInput.AlignVCenter
+    topPadding: 0
+    bottomPadding: 0
     background: Rectangle {
         radius: 3
         border.color: "#0078D4"
